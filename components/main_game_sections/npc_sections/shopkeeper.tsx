@@ -5,8 +5,12 @@ import Tooltip from '@components/tooltip';
 import GetMenuInventory from '@components/main_game_sections/menu_sections/inventory';
 
 const Shopkeeper = ({ npcId, onBack }) => {
-  const { db, getItemById, addItemToInventory, updateNPCActive } =
-    useGameContext();
+  const {
+    db,
+    getItemById,
+    addItemToPartyInventory,
+    updateNPCActive,
+  } = useGameContext();
   const { addEntry } = useLogContext();
   const npcActive = db.npcs.find((npc) => npc.id === npcId);
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,7 +21,7 @@ const Shopkeeper = ({ npcId, onBack }) => {
   const handleBuyItem = (itemId) => {
     if (getItemById(itemId).value <= player.gold) {
       npcActive.removeItemFromInventory(itemId);
-      addItemToInventory(player.id, itemId, db);
+      addItemToPartyInventory(itemId);
       player.gold -= getItemById(itemId).value;
       addEntry(
         <span>
@@ -193,8 +197,7 @@ const Shopkeeper = ({ npcId, onBack }) => {
         }}
       >
         <GetMenuInventory
-          playerId={player.id}
-          viewMode={'inventory'}
+          viewMode="inventory"
           store={true}
         />
       </div>

@@ -5,13 +5,14 @@ import { useState, useEffect } from 'react';
 import { useGameContext } from '@context/GameContext';
 
 const CreateCharacter = () => {
-  const { createCharacter, setCurrentScreen, db } = useGameContext();
-  const races = db.races;
-  const classes = db.classes;
+  const { createCharacter, setNewCurrentScreen, db } = useGameContext();
+  const races: any[] = db.races;
+  const classes: any[] = db.classes;
   const [name, setName] = useState('');
   const [selectedRace, setSelectedRace] = useState('');
-  const [selectedClass, setSelectedClass] = useState('Adventurer'); // Default class
-  const [statPoints, setStatPoints] = useState(5); // Additional stat points
+  const [selectedClass, setSelectedClass] = useState('Warrior'); // Default class
+  const [statPoints, setStatPoints] = useState(5);
+  type AttributeKey = keyof typeof attributes;
   const [attributes, setAttributes] = useState({
     strength: 0,
     dexterity: 0,
@@ -42,7 +43,7 @@ const CreateCharacter = () => {
     }
   }, [selectedRace, selectedClass]);
 
-  const handleAttributeChange = (attr: string, change: number) => {
+  const handleAttributeChange = (attr: AttributeKey, change: number) => {
     const baseAttributes = getBaseAttributes(
       races.find((race) => race.name === selectedRace),
       classes.find((cls) => cls.name === selectedClass)
@@ -63,7 +64,7 @@ const CreateCharacter = () => {
 
   const handleCreateCharacter = () => {
     createCharacter(name, selectedRace, selectedClass, attributes);
-    setCurrentScreen('mainGame');
+    setNewCurrentScreen('mainGame');
   };
 
   return (
@@ -189,7 +190,7 @@ const CreateCharacter = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(attributes).map((attr) => (
+                  {(Object.keys(attributes) as AttributeKey[]).map((attr) => (
                     <tr key={attr}>
                       <td>{attr.charAt(0).toUpperCase() + attr.slice(1)}</td>
                       <td>{attributes[attr]}</td>

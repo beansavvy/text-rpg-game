@@ -6,23 +6,30 @@ import Tooltip from '@components/tooltip';
 import CombatGrid from '@components/main_game_sections/combat_menu_sections/combatGrid';
 // import { getLocationById } from '@data/data';
 
+type TurnOrderEntry = {
+  type: 'player' | 'enemy';
+  id: string | number;
+};
+
 const Combat = () => {
   //updated code
   const { updateCombatActive, db, enemy, setNewCurrentLocation, party } =
     useGameContext(); //updated code
-  const [currentTabContent, setCurrentTabContent] = useState('');
   const [currTab, setCurrTab] = useState('');
   const player = db.characters[0];
-  const [turnOrder, setTurnOrder] = useState([]);
+  const [currentTabContent, setCurrentTabContent] = useState<React.ReactNode>('');
+  const [turnOrder, setTurnOrder] = useState<TurnOrderEntry[]>([]);
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
 
   useEffect(() => {
     // Initialize turn order with players and enemies
-    const players = db.characters.map((char) => ({
+    const players: TurnOrderEntry[] = db.characters.map((char: any) => ({
       type: 'player',
       id: char.id,
     }));
-    const enemies = [{ type: 'enemy', id: enemy.id }];
+    const enemies: TurnOrderEntry[] = [
+      { type: 'enemy', id: enemy.id },
+    ];
     setTurnOrder([...players, ...enemies]);
   }, [db.characters, enemy]);
 

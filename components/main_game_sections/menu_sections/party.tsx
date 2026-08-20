@@ -5,7 +5,7 @@ import Equipment from './equipment';
 import PartyFormationGrid from './partyFormationGrid'; // Import the new component
 
 const GetPartyMenu = () => {
-  const { db, setPartyFormation } = useGameContext();
+  const { db } = useGameContext();
   const [openSections, setOpenSections] = useState<
     Record<number, { stats?: boolean; equipment?: boolean }>
   >({});
@@ -73,12 +73,7 @@ const GetPartyMenu = () => {
       </button>
       {formationMode && (
         <div className="party-formation">
-          <PartyFormationGrid
-            party={db.party}
-            onFormationUpdate={(newFormation) =>
-              setPartyFormation(newFormation)
-            }
-          />
+          <PartyFormationGrid />
         </div>
       )}
 

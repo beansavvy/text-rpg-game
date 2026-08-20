@@ -36,21 +36,21 @@ const GetMenuInventory = ({ viewMode, store = false }) => {
   //   }
   // };
 
-  const handleUnequipItem = (item, slot = null) => {
-    // console.log('ALL ITEM PROPERTIES ON UNEQUIP: ', item, playerId, slot);
-    if (item != null) {
-      equipItemToCharacter(playerId, item.itemId, slot, false);
+  // const handleUnequipItem = (item, slot = null) => {
+  //   // console.log('ALL ITEM PROPERTIES ON UNEQUIP: ', item, playerId, slot);
+  //   if (item != null) {
+  //     equipItemToCharacter(playerId, item.itemId, slot, false);
 
-      setUpdateCounter((prevCounter) => prevCounter + 1); // Trigger re-render
-    }
-  };
+  //     setUpdateCounter((prevCounter) => prevCounter + 1); // Trigger re-render
+  //   }
+  // };
 
-  const unequipInventoryFromEquipped = (item) => {
-    const character = db.characters.find((char) => char.id === playerId);
-    const slot = character.equipped.getSlotById(id);
-    handleUnequipItem(item, playerId, [slot]);
-    setUpdateCounter((prevCounter) => prevCounter + 1); // Trigger re-render
-  };
+  // const unequipInventoryFromEquipped = (item) => {
+  //   const character = db.characters.find((char) => char.id === playerId);
+  //   const slot = character.equipped.getSlotById(id);
+  //   handleUnequipItem(item, playerId, [slot]);
+  //   setUpdateCounter((prevCounter) => prevCounter + 1); // Trigger re-render
+  // };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);

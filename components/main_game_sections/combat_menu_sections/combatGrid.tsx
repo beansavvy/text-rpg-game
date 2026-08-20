@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { customGrid } from '@eventHandlers/customGridHandler.tsx';
+import { customGrid } from '@eventHandlers/customGridHandler';
 import * as PIXI from 'pixi.js';
 
 const GRID_HEIGHT = 80; // Number of cells in height
@@ -10,8 +10,8 @@ const PLAYER_SIZE = 3; // Size of the player circle
 const MOVE_DURATION = 0.5; // Movement duration in seconds
 
 const CombatGrid = (party: any, enemies: any) => {
-  const pixiContainer = useRef(null);
-  const appRef = useRef(null);
+  const pixiContainer = useRef<HTMLDivElement | null>(null);
+  const appRef = useRef<PIXI.Application | null>(null);
   const gameContainerRef = useRef<PIXI.Container | null>(null);
   const [playerPosition, setPlayerPosition] = useState({
     x: Math.floor(GRID_WIDTH / 2),
@@ -44,7 +44,7 @@ const CombatGrid = (party: any, enemies: any) => {
           const gameContainer = new PIXI.Container();
           gameContainerRef.current = gameContainer;
           pixiApp.stage.addChild(gameContainer);
-          drawGame(gameContainer, pixiApp);
+          drawGame(gameContainer);
         }
       } catch (error) {
         console.error('Error initializing PixiJS:', error);
@@ -99,7 +99,7 @@ const CombatGrid = (party: any, enemies: any) => {
     container.addChild(obstacle);
   };
 
-  const drawGame = (gameContainer) => {
+  const drawGame = (gameContainer: PIXI.Container) => {
     gameContainer.removeChildren();
 
     addObstacle(30, 30, 2, 30, gameContainer);

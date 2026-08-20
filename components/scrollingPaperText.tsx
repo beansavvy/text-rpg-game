@@ -10,7 +10,7 @@ const ScrollingPaperText: React.FC<{
   const [queue, setQueue] = useState<string[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const canvasTextRef = useRef<HTMLDivElement>(null);
-  const continueMessageRef = useRef<HTMLDivElement>(null);
+  const continueMessageRef = useRef<HTMLElement | null>(null);
   // const paperCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {

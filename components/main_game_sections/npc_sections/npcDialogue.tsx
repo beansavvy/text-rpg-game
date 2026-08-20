@@ -3,7 +3,7 @@ import Tooltip from '@components/tooltip';
 import { useState } from 'react';
 
 const NPCDialogue = ({ npcId }) => {
-  const { db, getItemById, addItemToInventory } = useGameContext();
+  const { db } = useGameContext();
   const npcActive = db.npcs.find((npc) => npc.id === npcId);
 
   return (

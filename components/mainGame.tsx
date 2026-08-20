@@ -24,7 +24,7 @@ const MainGame = () => {
 
   useEffect(() => {
     // console.log('UPDATE MAIN GAME FILE: ' + combatActive);
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     if (combatActive == 0) {
       timer = setTimeout(() => setShowDialogue(true), 1000); // 1 second delay
     } else if (combatActive == 2) {
@@ -32,7 +32,9 @@ const MainGame = () => {
     } else {
       setShowDialogue(false);
     }
-    return () => clearTimeout(timer);
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [combatActive]);
 
   // console.log('CURRENT NPC STATE: ', npcActive);

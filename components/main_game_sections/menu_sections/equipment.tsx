@@ -2,22 +2,13 @@
 import React, { useState } from 'react';
 import { useGameContext } from '@context/GameContext';
 import Tooltip from '@components/tooltip';
-import GetEquipmentPopup from '@components/equipmentPopup';
 
 const Equipment = (character: any) => {
   const { equipItemToCharacter, getItemById, openItemPopup } = useGameContext();
 
   character = character.character;
 
-  const [popupOpen, setPopupOpen] = useState(false);
-  const [currentSlot, setCurrentSlot] = useState<string | null>(null);
-
-  const handleEquipButtonClick = (slot: string) => {
-    setCurrentSlot(slot); // Set the slot to filter items for
-    setPopupOpen(true); // Open the popup
-  };
-
-  const handleUnequipItem = (item, characterId, slot: []) => {
+  const handleUnequipItem = (item: any, characterId: string, slot: string[]) => {
     equipItemToCharacter(characterId, item.itemId, slot, false);
   };
 
@@ -169,14 +160,6 @@ const Equipment = (character: any) => {
           ))}
         </tbody>
       </table>
-
-      {popupOpen && (
-        <GetEquipmentPopup
-          slot={currentSlot}
-          charcterId={character.id}
-          onClose={closePopup}
-        />
-      )}
     </>
   );
 };

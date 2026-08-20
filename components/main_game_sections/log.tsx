@@ -4,12 +4,12 @@ import '@styles/logStyle.css'; // Adjust the import path accordingly
 
 const Log = () => {
   const { entries } = useLogContext();
-  const logRef = useRef(null);
+  const logRef = useRef<HTMLDivElement | null>(null);
   const [scrollbarVisible, setScrollbarVisible] = useState(false);
-  const [timeoutId, setTimeoutId] = useState(null);
+  const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [userScrolledUp, setUserScrolledUp] = useState(false);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
-  const [animationFrameId, setAnimationFrameId] = useState(null);
+  const [animationFrameId, setAnimationFrameId] = useState<number | null>(null);
 
   const handleScroll = () => {
     if (timeoutId) {
@@ -44,11 +44,12 @@ const Log = () => {
 
   const scrollToBottom = () => {
     const logElement = logRef.current;
+    if (!logElement) return;
     const startPosition = logElement.scrollTop;
     const endPosition = logElement.scrollHeight;
     const distance = endPosition - startPosition;
     const duration = 100; // Custom duration for the animation
-    let startTime = null;
+    let startTime: number | null = null;
 
     console.log(
       'START: ' +
@@ -59,7 +60,7 @@ const Log = () => {
         distance
     );
 
-    const animation = (currentTime) => {
+    const animation = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const timeElapsed = currentTime - startTime;
       const t = timeElapsed / duration;

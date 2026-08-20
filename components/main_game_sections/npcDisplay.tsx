@@ -4,21 +4,26 @@ import { useState } from 'react';
 import Shopkeeper from '@components/main_game_sections/npc_sections/shopkeeper';
 import NPCDialogue from '@components/main_game_sections/npc_sections/npcDialogue';
 
+interface NPCOption {
+  name: string;
+  [key: string]: any;
+}
+
 const NPCDisplay = () => {
   const { npcActive, db, getItemById, updateNPCActive } = useGameContext();
-  const [option, setOption] = useState('default');
+  const [option, setOption] = useState<NPCOption | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
   const [sortAttribute, setSortAttribute] = useState('');
   const [player, setPlayer] = useState(db.characters[0]);
 
-  const handleOptionClick = (option) => {
+  const handleOptionClick = (option: NPCOption) => {
     setOption(option);
     console.log(option);
   };
 
   const handleBack = () => {
-    setOption('default'); // Go back to the default view
+    setOption(null); // Go back to the default view
   };
 
   const setNPCInactive = () => {
@@ -27,9 +32,9 @@ const NPCDisplay = () => {
 
   console.log('OPTION: ', option);
 
-  if (option.name && option.name.toLowerCase() == 'shop') {
+  if (option?.name.toLowerCase() === 'shop') {
     return <Shopkeeper npcId={npcActive.id} onBack={handleBack} />;
-  } else if (option.name && option.name.toLowerCase() == 'speak') {
+  } else if (option?.name.toLowerCase() === 'speak') {
     return <NPCDialogue npcId={npcActive.id} />;
   } else {
     return (

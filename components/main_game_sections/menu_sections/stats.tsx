@@ -14,7 +14,7 @@ const GetMenuStats = (character: any) => {
         <tr>
           <td
             className="section-header"
-            colSpan="2"
+            colSpan={2}
             style={{ padding: 5 + 'px' }}
           >
             <strong>Stats</strong>
@@ -23,7 +23,7 @@ const GetMenuStats = (character: any) => {
       </thead> */}
       <tbody>
         <tr>
-          <td className="stats-table-seperator" colSpan="2">
+          <td className="stats-table-seperator" colSpan={2}>
             <strong>Information</strong>
           </td>
         </tr>
@@ -71,7 +71,7 @@ const GetMenuStats = (character: any) => {
         {/* Additional Information rows as needed */}
 
         <tr>
-          <td className="stats-table-seperator" colSpan="2">
+          <td className="stats-table-seperator" colSpan={2}>
             <strong>Attributes</strong>
           </td>
         </tr>
@@ -103,7 +103,7 @@ const GetMenuStats = (character: any) => {
         {/* Additional Attribute rows as needed */}
 
         <tr>
-          <td className="stats-table-seperator" colSpan="2">
+          <td className="stats-table-seperator" colSpan={2}>
             <strong>Offense</strong>
           </td>
         </tr>
@@ -112,7 +112,7 @@ const GetMenuStats = (character: any) => {
           character.weaponStats.mainHand.type == 'Empty') && (
           <>
             <tr>
-              <td className="stats-table-seperator-2nd" colSpan="2">
+              <td className="stats-table-seperator-2nd" colSpan={2}>
                 Main-Hand Stats
               </td>
             </tr>
@@ -143,7 +143,7 @@ const GetMenuStats = (character: any) => {
             character.weaponStats.offHand.type == 'Empty') && (
             <>
               <tr>
-                <td className="stats-table-seperator-2nd" colSpan="2">
+                <td className="stats-table-seperator-2nd" colSpan={2}>
                   Off-Hand Stats
                 </td>
               </tr>
@@ -170,7 +170,7 @@ const GetMenuStats = (character: any) => {
           )}
         {/* Additional Offense rows as needed */}
         <tr>
-          <td className="stats-table-seperator-2nd" colSpan="2">
+          <td className="stats-table-seperator-2nd" colSpan={2}>
             Other
           </td>
         </tr>
@@ -183,7 +183,7 @@ const GetMenuStats = (character: any) => {
           <td>{character.subStats.bonusPhys}</td>
         </tr>
         <tr>
-          <td className="stats-table-seperator" colSpan="2">
+          <td className="stats-table-seperator" colSpan={2}>
             <strong>Defense</strong>
           </td>
         </tr>
@@ -207,7 +207,7 @@ const GetMenuStats = (character: any) => {
         {/* Additional Defense rows as needed */}
 
         <tr>
-          <td className="stats-table-seperator" colSpan="2">
+          <td className="stats-table-seperator" colSpan={2}>
             <strong>Other</strong>
           </td>
         </tr>

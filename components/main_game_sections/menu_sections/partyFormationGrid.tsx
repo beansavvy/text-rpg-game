@@ -7,12 +7,18 @@ const GRID_HEIGHT = 75;
 const CELL_SIZE = 5; // Pixel size of each cell
 const MOVEMENT_RANGE = 15; // Movement range in cells
 
-const PartyFormationGrid = ({ onFormationUpdate }: any) => {
+type MemberPosition = {
+  id: string | number;
+  x: number;
+  y: number;
+};
+
+const PartyFormationGrid = () => {
   const { party } = useGameContext();
-  const pixiContainer = useRef(null);
-  const appRef = useRef(null);
+  const pixiContainer = useRef<HTMLDivElement | null>(null);
+  const appRef = useRef<PIXI.Application | null>(null);
+  const [memberPositions, setMemberPositions] = useState<MemberPosition[]>([]);
   const gameContainerRef = useRef<PIXI.Container | null>(null);
-  const [memberPositions, setMemberPositions] = useState([]);
 
   // Function to update member positions
   const updateMemberPositions = () => {
@@ -81,7 +87,7 @@ const PartyFormationGrid = ({ onFormationUpdate }: any) => {
     }
   }, [memberPositions]);
 
-  const drawGame = (gameContainer) => {
+  const drawGame = (gameContainer: PIXI.Container) => {
     gameContainer.removeChildren();
 
     console.log('ATTEMPTING TO DRAW GAME!!!! ', memberPositions);

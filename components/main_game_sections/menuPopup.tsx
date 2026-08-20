@@ -36,7 +36,7 @@ const MenuPopup = ({ activeMenu, onClose }: MenuPopupProps) => {
   const getMenuContent = () => {
     switch (activeMenu) {
       case 'inventory':
-        return <Inventory />;
+        return <Inventory viewMode="inventory" />;
 
       case 'party':
         return <Party />;
