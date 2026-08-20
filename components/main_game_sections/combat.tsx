@@ -145,6 +145,7 @@ const Combat = () => {
                     <tr>
                       {['skills', 'consumables', 'etc'].map((tab) => (
                         <td
+                          key={tab}
                           className="combat-menu-btn-td"
                           id={`${tab}-btn-td`}
                           style={{

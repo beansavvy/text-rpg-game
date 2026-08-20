@@ -94,7 +94,7 @@ const Shopkeeper = ({ npcId, onBack }) => {
         }}
       >
         <h1>
-          <strong>{npcActive.name}'s Shop</strong>
+          <strong>{npcActive.name}&apos;s Shop</strong>
         </h1>
       </div>
       <div></div>
