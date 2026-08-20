@@ -1,0 +1,64 @@
+/* Custom scrollbar styles */
+.log-container-wrapper {
+  position: relative;
+  height: 40%; /* Adjust as necessary */
+  max-height: 40%;
+}
+
+.log-container {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 100%;
+  height: 100%;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #888 transparent; /* For Firefox */
+  position: relative;
+  border-bottom: 3px solid black;
+}
+
+/* Webkit browsers (Chrome, Safari) */
+.log-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.log-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+.log-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.hidden-scrollbar {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  padding-right: 8px;
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
+}
+
+.scroll-to-bottom {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.scroll-to-bottom:hover {
+  background-color: #0056b3;
+}

@@ -1,0 +1,41 @@
+#right-panel-table {
+  border-spacing: 0px;
+  height: 100%;
+  float: right;
+  width: 100%;
+}
+
+#right-panel-table tr td {
+  padding: 0px;
+}
+
+#menu-popout {
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+.menu-btn-td {
+  padding: 0px;
+  border: none;
+  border-bottom: 1px solid black;
+  min-width: 75px;
+  text-align: center;
+}
+
+.menu-btn {
+  border: none;
+  background: none;
+}
+
+#menu-tabs-table {
+  border-spacing: 0px;
+  width: 68px;
+  height: 100%;
+}
+
+.td-vert-gap-fill {
+  height: 100%;
+  border-left: 1px solid black;
+}

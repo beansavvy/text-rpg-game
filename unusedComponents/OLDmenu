@@ -1,0 +1,120 @@
+import React, { useState } from 'react';
+import '@styles/menu.css';
+import dynamic from 'next/dynamic';
+import { useGameContext } from '@context/GameContext';
+
+const CustomMap = dynamic(
+  () => import('@components/main_game_sections/menu_sections/customMap'),
+  {
+    ssr: false,
+  }
+);
+
+const GetMenuInventory = dynamic(
+  () => import('@components/main_game_sections/menu_sections/inventory'),
+  {
+    ssr: false,
+  }
+);
+
+const GetMenuStats = dynamic(
+  () => import('@components/main_game_sections/menu_sections/stats'),
+  {
+    ssr: false,
+  }
+);
+
+const GetPartyMenu = dynamic(
+  () => import('@components/main_game_sections/menu_sections/party'),
+  {
+    ssr: false,
+  }
+);
+
+const Menu: React.FC = () => {
+  const [selectedMenu, setSelectedMenu] = useState('');
+  const [currentTabContent, setCurrentTabContent] = useState('');
+  const [currTab, setCurrTab] = useState('');
+  const { currentLocation, db } = useGameContext(); // Use context
+
+  const handleMenuClick = (tabName) => {
+    if (currTab == tabName) {
+      setCurrentTabContent('');
+      setCurrTab('');
+      return;
+    }
+    switch (tabName) {
+      case 'inventory':
+        setCurrentTabContent(<GetMenuInventory playerId={'c-1'} />);
+        break;
+      case 'party':
+        setCurrentTabContent(<GetPartyMenu />);
+        break;
+      case 'quests':
+        setCurrentTabContent('Quest log content goes here');
+        break;
+      case 'skills':
+        setCurrentTabContent('Skills content goes here');
+        break;
+      case 'stats':
+        setCurrentTabContent(<GetMenuStats character={db.characters[0]} />);
+        break;
+      case 'map':
+        setCurrentTabContent(<CustomMap />);
+        break;
+      case 'system':
+        setCurrentTabContent('System settings content goes here');
+        break;
+    }
+    setCurrTab(tabName);
+  };
+
+  return (
+    <table id="right-panel-table">
+      <tbody>
+        <tr>
+          <td>
+            <table id="menu-tabs-table">
+              <tbody>
+                {[
+                  'inventory',
+                  'party',
+                  'quests',
+                  'skills',
+                  'map',
+                  'system',
+                ].map((tab) => (
+                  <tr key={tab}>
+                    <td
+                      className="menu-btn-td"
+                      id={`${tab}-btn-td`}
+                      style={{
+                        boxShadow:
+                          currTab === tab
+                            ? 'inset -3px 0px 5px rgba(0, 0, 0, 0.2)'
+                            : 'none',
+                        borderLeft: currTab === tab ? 'none' : '1px solid grey',
+                      }}
+                    >
+                      <button
+                        className="menu-btn"
+                        onClick={() => handleMenuClick(tab)}
+                      >
+                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                <tr>
+                  <td className="td-vert-gap-fill"></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
+export default Menu;

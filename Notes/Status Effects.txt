@@ -1,0 +1,66 @@
+List of stats:
+    health: health.current, health.max
+    stamina: stamina.current, stamina.max
+    mana: mana.current, mana.max
+
+    attributes:
+      strength
+      dexterity
+      vitality
+      endurance
+      intellect
+      luck
+
+    substats:
+      defense - flat
+      percentDR - percent, 0.0 to 0.8
+      resistanceDef: - flat
+          fire
+          lightning
+          ice
+          earth
+          arcane
+          psychic
+          holy
+          death
+          slashing
+          piercing
+          blunt
+      resistance: - percent, 0 to 0.8
+          fire
+          lightning
+          ice
+          earth
+          arcane
+          psychic
+          holy
+          death
+          slashing
+          piercing
+          blunt
+      bonusDamage: - flat
+          fire
+          lightning
+          ice
+          earth
+          arcane
+          psychic
+          holy
+          death
+          slashing
+          piercing
+          blunt
+      increasedDamage- percent, 0 to infinity
+          fire
+          lightning
+          ice
+          earth
+          arcane
+          psychic
+          holy
+          death
+          slashing
+          piercing
+          blunt
+      evadeChance - Base = 10% at level 0, +2% per dex, -0.5% per level
+      movementRange - 2 + half of dex, rounded down

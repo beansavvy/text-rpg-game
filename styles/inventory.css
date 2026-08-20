@@ -1,0 +1,47 @@
+#menu-invEq-wrapper-table {
+  height: 95%;
+  width: 100%;
+  min-width: 295px;
+}
+
+#menu-invEq-gold-container {
+  padding: 0px;
+  width: 100%;
+  border-top: 1px solid darkgray;
+  text-align: center;
+}
+
+.scrollable-content {
+  scrollbar-width: 1px;
+}
+
+#menu-inv-wrapper-table,
+#menu-equipped-wrapper-table {
+  width: 100%;
+  margin-right: 0px;
+  border-collapse: collapse;
+  display: block;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+#inventory-btn-td {
+  border-top: 1px solid black;
+}
+
+.inventory-row {
+  height: 24px;
+  border-bottom: 1px solid lightgray;
+}
+
+.table-fill-excess-td {
+  width: 100%;
+}
+
+.inv-item-container {
+  width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 3px 0px;
+}

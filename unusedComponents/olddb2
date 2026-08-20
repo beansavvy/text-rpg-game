@@ -1,0 +1,1615 @@
+import { customInventory, customEquipment } from '@objects/customInventory';
+import { Item, Weapon, Armor, Jewelry, Consumable } from '@objects/item.js';
+import { Enemy } from '@objects/enemy';
+import { Skill, EnemySkill } from '@objects/skill';
+import { skillBook } from '@objects/skillBook';
+import { NPC } from '@objects/npc';
+
+const racesObj = [
+  {
+    name: 'Human',
+    flavorText:
+      'Humans are versatile, adaptable, and ambitious. They can excel in any number of professions and forms of magic.',
+    statBonuses: { strength: 1, dexterity: 1, vitality: 1 },
+    traits: [
+      {
+        name: 'Adaptability',
+        effect: 'Gain an extra stat point every 3 levels.',
+        flavorText:
+          'Humans adapt quickly to their surroundings, allowing them to develop diverse skills.',
+      },
+      {
+        name: 'Diplomat',
+        effect: 'Improves relations and prices with all NPCs.',
+        flavorText:
+          'Humans have a knack for negotiation, earning them favor in social interactions.',
+      },
+    ],
+  },
+  {
+    name: 'Orc',
+    flavorText:
+      'Orcs are strong and fierce, known for their physical prowess and intimidating presence.',
+    statBonuses: { strength: 2, vitality: 1 },
+    traits: [
+      {
+        name: 'Berserk',
+        effect: 'Increase physical damage under 50% health.',
+        flavorText:
+          'When Orcs are wounded, their rage fuels their strength, increasing their damage output.',
+      },
+      {
+        name: 'War Cry',
+        effect:
+          'Temporarily intimidate enemies, reducing their attack efficiency.',
+        flavorText:
+          'The fearsome roar of an Orc can unnerve even the bravest foes.',
+      },
+    ],
+  },
+  {
+    name: 'Dwarf',
+    flavorText:
+      'Dwarves are stout and hardy, excellent craftsmen and warriors, famous for their ability to withstand physical and magical attacks.',
+    statBonuses: { strength: 1, vitality: 2 },
+    traits: [
+      {
+        name: 'Sturdiness',
+        effect: 'Reduces incoming damage by 10%.',
+        flavorText:
+          'The rugged nature of Dwarves grants them superior resilience.',
+      },
+      {
+        name: 'Treasure Hunter',
+        effect: 'Increases the chance to find rare items.',
+        flavorText:
+          'Dwarves have an uncanny ability to find hidden treasures and rare materials.',
+      },
+    ],
+  },
+  {
+    name: 'Elf',
+    flavorText:
+      'Elves are graceful and intelligent, skilled with magic and archery, known for their keen senses and longevity.',
+    statBonuses: { dexterity: 1, intellect: 2 },
+    traits: [
+      {
+        name: 'Foresight',
+        effect: 'Increases critical hit chance.',
+        flavorText:
+          'Elves possess an innate ability to anticipate enemy movements, granting them a higher chance to land critical strikes.',
+      },
+      {
+        name: 'Elusive',
+        effect: 'Adds a slight bonus to dodge chance.',
+        flavorText:
+          "Elves' nimble bodies allow them to evade attacks more easily.",
+      },
+    ],
+  },
+];
+
+const classesObj = [
+  {
+    name: 'Warrior',
+    flavorText:
+      'Warriors are brave combatants that are unparalleled in melee combat and physical endurance.',
+    statBonuses: { strength: 2, vitality: 2 },
+    traits: [
+      {
+        name: 'Fortified Armor',
+        effect: 'Permanently increases physical defense.',
+        flavorText:
+          'Years of battle have hardened the warrior, bolstering their defense against physical attacks.',
+        levelRequirement: 5,
+      },
+      {
+        name: 'Combat Regeneration',
+        effect: 'Slowly regenerates health during combat.',
+        flavorText:
+          "The warrior's resilience allows them to recover health slowly throughout the battle.",
+        levelRequirement: 10,
+      },
+      {
+        name: 'Unyielding',
+        effect: 'Decreases damage taken when health is below 50%.',
+        flavorText:
+          "In dire situations, a warrior's survival instincts reduce the incoming damage significantly.",
+        levelRequirement: 15,
+      },
+    ],
+  },
+  {
+    name: 'Mage',
+    flavorText:
+      'Mages wield arcane powers to cast powerful spells. They can decimate foes with a variety of magical attacks.',
+    statBonuses: { intellect: 4 },
+    traits: [
+      {
+        name: 'Mana Efficiency',
+        effect: 'Reduces mana cost of all spells.',
+        flavorText:
+          'Through deep understanding of magical energies, the mage uses spells with reduced mana consumption.',
+        levelRequirement: 5,
+      },
+      {
+        name: 'Arcane Affinity',
+        effect:
+          'Increases effectiveness of all spells by enhancing their potency.',
+        flavorText:
+          "The mage's close bond with the arcane increases the potency of all their spells.",
+        levelRequirement: 10,
+      },
+      {
+        name: 'Elemental Resistance',
+        effect: 'Reduces elemental damage taken from elemental sources.',
+        flavorText:
+          'Years of exposure to elemental forces have granted the mage resistance against them.',
+        levelRequirement: 15,
+      },
+    ],
+  },
+  {
+    name: 'Hunter',
+    flavorText:
+      'Hunters are masters of tracking and ranged combat, adept at using bows and traps to defeat their enemies from a distance.',
+    statBonuses: { dexterity: 3, intellect: 1 },
+    traits: [
+      {
+        name: 'Keen Senses',
+        effect: 'Increases critical strike chance with ranged weapons.',
+        flavorText:
+          "The hunter's acute senses allow for precise targeting, increasing the likelihood of critical hits.",
+        levelRequirement: 5,
+      },
+      {
+        name: 'Camouflage',
+        effect: 'Increases the chance to dodge attacks.',
+        flavorText:
+          'The hunter can blend seamlessly with their surroundings, making them harder to hit.',
+        levelRequirement: 10,
+      },
+      {
+        name: 'Enduring Tracker',
+        effect: 'Increases stamina for prolonged chases.',
+        flavorText:
+          'Long hunts have conditioned the hunter, increasing their stamina for long pursuits.',
+        levelRequirement: 15,
+      },
+    ],
+  },
+  {
+    name: 'Bard',
+    flavorText:
+      'Bards are jacks-of-all-trades, skilled in a variety of tasks and quick to master any situation they are thrust into, always preparing for their next story.',
+    statBonuses: { strength: 1, dexterity: 1, intellect: 1, luck: 1 },
+    traits: [
+      {
+        name: 'Resourceful',
+        effect: 'Finds extra resources and items from all sources.',
+        flavorText:
+          "The adventurer's knack for improvisation allows them to find more resources and items than usual.",
+        levelRequirement: 5,
+      },
+      {
+        name: "Minstrel's Recovery",
+        effect: 'Reduces cooldowns on all skills.',
+        flavorText:
+          "The adventurer's quick wits allow them to recover from exertions faster, reducing the cooldowns of all skills.",
+        levelRequirement: 10,
+      },
+      {
+        name: 'Versatile',
+        effect:
+          'Improves effectiveness when using a different skill type than the previous skill.',
+        flavorText:
+          'Adventurers can easily adapt to different situations, improving their effectiveness with various weapons and skills.',
+        levelRequirement: 15,
+      },
+    ],
+  },
+];
+
+export function populateDB() {
+  const currentLocation = '3';
+  const characters = [];
+  const skills = generateSkills();
+  const items = generateItems();
+  const enemies = generateEnemies(items, skills);
+  const npcs = generateNPCs(items);
+  const gameLocations = generateGameLocations(enemies, npcs);
+  const scrollingText = generateScrollingText();
+  const quests = generateQuests();
+  const races = racesObj;
+  const classes = classesObj;
+
+  return {
+    currentLocation: currentLocation,
+    characters: characters,
+    skills: skills,
+    items: items,
+    enemies: enemies,
+    npcs: npcs,
+    locations: gameLocations,
+    scrollingTexts: scrollingText,
+    quests: quests,
+    races: races,
+    classes: classes,
+  };
+}
+//our massive database for the game.
+//item ids 0-999 are weapons, 1000-1999 are armor, 2000-2999 are jewelry, 3000-3999 are consumables, 4000-4999 are questItems, 5000-5999 are ammo, and 6000-6999 are misc items
+
+function generateItems() {
+  return {
+    weapons: [
+      new Weapon(
+        0,
+        'Iron Sword',
+        'A sturdy iron sword.',
+        10,
+        10,
+        3,
+        7,
+        1,
+        0.8,
+        0.15,
+        // 1,
+        ['mainHand'],
+        null
+      ),
+      new Weapon(
+        1,
+        "Apprentice's Staff",
+        'A wooden staff imbued with magical properties.',
+        15,
+        20,
+        2,
+        4,
+        0.8,
+        0.9,
+        0.1,
+        // 1,
+        ['mainHand', 'offHand'],
+        { attribute: ['bonusMagicDmg'], value: [2] }
+      ),
+      new Weapon(
+        2,
+        'Bow',
+        'A long range bow.',
+        12,
+        20,
+        3,
+        6,
+        0.7,
+        0.85,
+        0.3,
+        // 1,
+        ['mainHand', 'offHand'],
+        null
+      ),
+      new Weapon(
+        3,
+        'Iron Dagger',
+        'A short but fast dagger.',
+        7,
+        8,
+        2,
+        5,
+        1.25,
+        0.95,
+        0.4,
+        // 1,
+        ['mainHand'],
+        null
+      ),
+      new Weapon(
+        4,
+        'Iron Longsword',
+        'A sharp and balanced longsword.',
+        15,
+        25,
+        4,
+        8,
+        1,
+        0.85,
+        0.2,
+        ['mainHand'],
+        null
+      ),
+      new Weapon(
+        5,
+        'Iron Battle Axe',
+        'A heavy battle axe with a powerful swing.',
+        20,
+        30,
+        5,
+        10,
+        0.7,
+        0.75,
+        0.3,
+        ['mainHand', 'offHand'],
+        null
+      ),
+      new Weapon(
+        6,
+        'Iron War Hammer',
+        'A massive hammer that deals devastating blows.',
+        25,
+        35,
+        6,
+        12,
+        0.6,
+        0.7,
+        0.25,
+        ['mainHand', 'offHand'],
+        null
+      ),
+      new Weapon(
+        7,
+        'Light Crossbow',
+        'A ranged weapon that fires bolts with precision.',
+        18,
+        40,
+        4,
+        8,
+        0.9,
+        0.9,
+        0.3,
+        ['mainHand', 'offHand'],
+        null
+      ),
+      new Weapon(
+        8,
+        'Iron Mace',
+        'A blunt weapon designed to crush armor.',
+        12,
+        22,
+        3,
+        7,
+        0.8,
+        0.85,
+        0.2,
+        ['mainHand'],
+        null
+      ),
+      new Weapon(
+        9,
+        'Iron Rapier',
+        'A thin, fast, and precise sword.',
+        10,
+        20,
+        2,
+        5,
+        1.4,
+        0.95,
+        0.4,
+        ['mainHand'],
+        null
+      ),
+      new Weapon(
+        10,
+        'Iron Greatsword',
+        'A large sword that requires two hands to wield.',
+        30,
+        50,
+        8,
+        14,
+        0.5,
+        0.8,
+        0.2,
+        ['mainHand', 'offHand'],
+        null
+      ),
+      new Weapon(
+        11,
+        'Shortbow',
+        'A simple bow suitable for quick shots.',
+        8,
+        18,
+        2,
+        5,
+        1.2,
+        0.9,
+        0.35,
+        ['mainHand', 'offHand'],
+        null
+      ),
+      new Weapon(
+        12,
+        "Apprentice's Magic Wand",
+        'A wand that enhances magical attacks.',
+        5,
+        15,
+        1,
+        3,
+        1.1,
+        0.95,
+        0.25,
+        ['mainHand'],
+        { attribute: ['bonusMagicDmg'], value: [3] }
+      ),
+      new Weapon(
+        13,
+        'Iron Throwing Knives',
+        'A set of knives designed for throwing.',
+        3,
+        10,
+        1,
+        2,
+        1.5,
+        0.9,
+        0.35,
+        ['offHand'],
+        null
+      ),
+    ],
+    armor: [
+      new Armor(
+        1000,
+        'Apprentice Hood',
+        'A simple cloth hood worn by novice spellcasters.',
+        1,
+        10,
+        { defense: 1, bonusMagic: 1 },
+        ['head']
+      ),
+      new Armor(
+        1001,
+        'Apprentice Robes',
+        'Basic robes that provide minimal protection.',
+        3,
+        15,
+        { defense: 1, bonusMagic: 2 },
+        ['chest']
+      ),
+      new Armor(
+        1002,
+        'Apprentice Gloves',
+        'Cloth gloves with basic enchantments.',
+        1,
+        8,
+        { defense: 1, bonusMagic: 1 },
+        ['hands']
+      ),
+      new Armor(
+        1003,
+        'Apprentice Boots',
+        'Soft boots that are easy to move in.',
+        1,
+        8,
+        { defense: 1, bonusMagic: 1 },
+        ['feet']
+      ),
+      // Light Armor Set
+      new Armor(
+        1004,
+        'Leather Cap',
+        'A light cap made of leather, offering minimal protection.',
+        2,
+        10,
+        { defense: 1 },
+        ['head']
+      ),
+      new Armor(
+        1005,
+        'Leather Tunic',
+        'A tunic made from tanned leather, providing basic defense.',
+        4,
+        15,
+        { defense: 2 },
+        ['chest']
+      ),
+      new Armor(
+        1006,
+        'Leather Gloves',
+        'Simple leather gloves offering some protection.',
+        1,
+        5,
+        { defense: 1 },
+        ['hands']
+      ),
+      new Armor(
+        1007,
+        'Leather Boots',
+        'Lightweight boots made of leather, designed for agility.',
+        3,
+        8,
+        { defense: 1 },
+        ['feet']
+      ),
+
+      // Medium Armor Set
+      new Armor(
+        1008,
+        'Chain Coif',
+        'A coif made of interlocking metal rings.',
+        8,
+        25,
+        { defense: 3 },
+        ['head']
+      ),
+      new Armor(
+        1009,
+        'Chainmail Hauberk',
+        'A long shirt of chainmail, offering moderate protection.',
+        15,
+        35,
+        { defense: 4 },
+        ['chest']
+      ),
+      new Armor(
+        1010,
+        'Chainmail Gauntlets',
+        'Protective gloves made of chainmail.',
+        6,
+        20,
+        { defense: 2 },
+        ['hands']
+      ),
+      new Armor(
+        1011,
+        'Chainmail Greaves',
+        'Leg protection made of interlocking rings of metal.',
+        10,
+        30,
+        { defense: 3 },
+        ['feet']
+      ),
+
+      // Heavy Armor Set
+      new Armor(
+        1012,
+        'Iron Helmet',
+        'A sturdy iron helmet.',
+        12,
+        40,
+        { defense: 5 },
+        ['head']
+      ),
+      new Armor(
+        1013,
+        'Iron Cuirass',
+        'A heavy iron chestplate offering significant protection.',
+        25,
+        60,
+        { defense: 8 },
+        ['chest']
+      ),
+      new Armor(
+        1014,
+        'Iron Gauntlets',
+        'Iron gloves that provide excellent hand protection.',
+        10,
+        35,
+        { defense: 4 },
+        ['hands']
+      ),
+      new Armor(
+        1015,
+        'Iron Boots',
+        'Heavy iron boots designed to protect the feet.',
+        15,
+        45,
+        { defense: 5 },
+        ['feet']
+      ),
+      new Armor(
+        1016,
+        'Hunter’s Cloak',
+        'A cloak that provides camouflage.',
+        3,
+        18,
+        { dodgeChance: 0.1 },
+        ['back']
+      ),
+      new Armor(
+        1017,
+        'Knight’s Shield',
+        'A large shield offering excellent protection.',
+        15,
+        40,
+        { defense: 4 },
+        ['offHand']
+      ),
+      new Armor(
+        1018,
+        'Dragon Scale Armor',
+        'Armor made from the scales of a dragon.',
+        25,
+        100,
+        { defense: 8 },
+        ['chest']
+      ),
+      new Armor(
+        1019,
+        'Assassin’s Hood',
+        'A hood that conceals the wearer’s identity.',
+        2,
+        25,
+        { stealth: 5, defense: 2 },
+        ['head']
+      ),
+      new Armor(
+        1020,
+        'Mystic Shroud',
+        'A shroud that pulses with a mysterious energy, enhancing magical abilities.',
+        2,
+        50,
+        { defense: 3, bonusMagic: 3 },
+        ['back'],
+        5
+      ),
+      new Armor(
+        1021,
+        'Thief’s Mask',
+        'A mask worn by thieves, it provides excellent stealth abilities.',
+        1,
+        45,
+        { defense: 1, stealth: 3 },
+        ['head'],
+        4
+      ),
+      new Armor(
+        1022,
+        'Paladin’s Aegis',
+        'A blessed shield that offers unmatched protection.',
+        15,
+        100,
+        { defense: 10, holyResistance: 2 },
+        ['offHand'],
+        10
+      ),
+      new Armor(
+        1023,
+        'Dragonscale Plate',
+        'Armor crafted from the scales of a powerful dragon, incredibly durable and nearly impervious to damage.',
+        25,
+        150,
+        { defense: 10, fireResistance: 5 },
+        ['chest'],
+        12
+      ),
+    ],
+    jewelry: [
+      new Jewelry(
+        2000,
+        'Ring of Strength',
+        'A ring that increases physical power.',
+        0.1,
+        50,
+        { strength: 2 },
+        ['finger']
+      ),
+      new Jewelry(
+        2001,
+        'Amulet of Wisdom',
+        'An amulet that enhances intellect.',
+        0.2,
+        60,
+        { intellect: 3 },
+        ['neck']
+      ),
+      new Jewelry(
+        2002,
+        'Bracelet of Dexterity',
+        'A bracelet that improves agility.',
+        0.1,
+        45,
+        { dexterity: 2 },
+        ['wrist']
+      ),
+      new Jewelry(
+        2003,
+        'Pendant of Vitality',
+        'A pendant that boosts vitality.',
+        0.3,
+        55,
+        { vitality: 3 },
+        ['neck']
+      ),
+      new Jewelry(
+        2004,
+        'Ring of Protection',
+        'A ring that provides a defensive bonus.',
+        0.1,
+        50,
+        { defense: 2 },
+        ['finger']
+      ),
+      new Jewelry(
+        2005,
+        'Charm of Luck',
+        'A charm that increases luck.',
+        0.05,
+        40,
+        { luck: 2 },
+        ['neck']
+      ),
+      new Jewelry(
+        2006,
+        'Crown of Power',
+        'A crown that grants significant power.',
+        1,
+        120,
+        { strength: 4, intellect: 4 },
+        ['head']
+      ),
+      new Jewelry(
+        2008,
+        'Belt of Fortitude',
+        'A belt that increases endurance.',
+        0.2,
+        45,
+        { vitality: 2 },
+        ['waist']
+      ),
+      new Jewelry(
+        2009,
+        'Talisman of the Elements',
+        'A talisman that provides elemental resistance.',
+        0.3,
+        70,
+        { fireRes: 2, iceRes: 2 },
+        ['neck']
+      ),
+    ],
+    consumable: [
+      new Consumable(
+        3000,
+        'Lesser Health Potion',
+        'Restores 10 health points.',
+        0.1,
+        5,
+        ['health'],
+        [10]
+      ),
+      new Consumable(
+        3001,
+        'Lesser Mana Potion',
+        'Restores 10 mana points.',
+        0.1,
+        5,
+        ['mana'],
+        [10]
+      ),
+      new Consumable(
+        3002,
+        'Lesser Stamina Potion',
+        'Restores 10 stamina points.',
+        0.1,
+        5,
+        ['stamina'],
+        [10]
+      ),
+    ],
+    questItem: [],
+    ammo: [],
+    misc: [
+      new Item(
+        6000,
+        'Misc',
+        'Wolf Pelt',
+        'The mangy pet of a wild wolf.',
+        1,
+        10
+      ),
+      new Item(
+        6001,
+        'Misc',
+        'Wolf Fang',
+        'The sharp canine of a wild wolf.',
+        0.1,
+        20
+      ),
+      new Item(6002, 'Misc', 'Bear Pelt', 'The thick pelt of a bear...', 3, 40),
+      new Item(
+        6003,
+        'Misc',
+        'Bear Claw',
+        'The long claw of a bear...',
+        0.1,
+        50
+      ),
+      new Item(
+        6004,
+        'Misc',
+        'Goblin Ear',
+        'The ear of a goblin... Gross!',
+        0.1,
+        20
+      ),
+    ],
+  };
+
+  return items;
+}
+
+function generateEnemies(items, skills) {
+  // console.log('ITEMS');
+  // console.log(items);
+  const getItemById = (id) => {
+    // console.log('itemid', id);
+    let category;
+    if (id >= 0 && id <= 999) {
+      category = items.weapons;
+    } else if (id >= 1000 && id <= 1999) {
+      category = items.armor;
+    } else if (id >= 2000 && id <= 2999) {
+      category = items.jewelry;
+    } else if (id >= 3000 && id <= 3999) {
+      category = items.consumable;
+    } else if (id >= 4000 && id <= 4999) {
+      category = items.questItem;
+    } else if (id >= 5000 && id <= 5999) {
+      category = items.ammo;
+    } else if (id >= 6000 && id <= 6999) {
+      category = items.misc;
+    } else {
+      return null;
+    }
+    const fullId = 'i-' + id.toString().padStart(8, '0');
+    return category.find((item) => item.getId() === fullId) || null;
+  };
+
+  const getSkillById = (id) => {
+    return skills.find((skill) => skill.getId() === id) || null;
+  };
+
+  return [
+    new Enemy(
+      1,
+      'Wolf',
+      { current: 20, max: 20 },
+      { current: 5, max: 5 },
+      { current: 5, max: 5 },
+      0.5,
+      1,
+      0,
+      0.3,
+      0.9,
+      0.2,
+      {
+        defense: 1,
+        magicDefense: 0,
+        percentDR: 0,
+        magicRes: 0,
+        movementRange: 5,
+      },
+      { min: 1, max: 2 },
+      'A ferocious wolf.',
+      [
+        {
+          type: 'item',
+          item: getItemById(6000),
+          rarity: 0.8,
+        },
+        {
+          type: 'item',
+          item: getItemById(6001),
+          count: { min: 1, max: 3 },
+          rarity: 0.3,
+        },
+      ],
+      [getSkillById(1000), getSkillById(1001)]
+    ),
+    new Enemy(
+      2,
+      'Bear',
+      { current: 40, max: 40 },
+      { current: 10, max: 10 },
+      { current: 5, max: 5 },
+      2,
+      0.5,
+      0,
+      0.1,
+      0.9,
+      0.1,
+      {
+        defense: 1,
+        magicDefense: 0,
+        percentDR: 0,
+        magicRes: 0,
+        movementRange: 3,
+      },
+      { min: 3, max: 4 },
+      'A powerful bear.',
+      [
+        {
+          type: 'item',
+          item: getItemById(6002),
+          rarity: 0.7,
+        },
+        {
+          type: 'item',
+          item: getItemById(6003),
+          count: 2,
+          rarity: 0.5,
+        },
+      ],
+      [getSkillById(1000), getSkillById(1001)]
+    ),
+    new Enemy(
+      3,
+      'Goblin Scout',
+      { current: 20, max: 20 },
+      { current: 10, max: 10 },
+      { current: 5, max: 5 },
+      1,
+      1,
+      0,
+      0.4,
+      0.7,
+      0.3,
+      {
+        defense: 1,
+        magicDefense: 0,
+        percentDR: 0,
+        magicRes: 0,
+        movementRange: 4,
+      },
+      { min: 2, max: 4 },
+      'A sneaky goblin scout.',
+      [
+        {
+          type: 'item',
+          item: getItemById(6003),
+          count: 2,
+          rarity: 0.6,
+        },
+        { type: 'gold', count: 20, rarity: 0.8 },
+      ]
+    ),
+    new Enemy(
+      4,
+      'Goblin Warrior',
+      { current: 30, max: 30 },
+      { current: 10, max: 10 },
+      { current: 5, max: 5 },
+      1.5,
+      1,
+      0,
+      0.1,
+      0.9,
+      0.2,
+      {
+        defense: 1,
+        magicDefense: 0,
+        percentDR: 0,
+        magicRes: 0,
+        movementRange: 2,
+      },
+      { min: 5, max: 8 },
+      'A fierce goblin warrior.',
+      [
+        {
+          type: 'item',
+          item: getItemById(6004),
+          count: 2,
+          rarity: 0.6,
+        },
+        { type: 'gold', count: 40, rarity: 0.8 },
+      ]
+    ),
+    new Enemy(
+      5,
+      'Goblin Mage',
+      { current: 20, max: 20 },
+      { current: 5, max: 5 },
+      { current: 10, max: 10 },
+      1,
+      0.5,
+      2,
+      0,
+      0.8,
+      0.1,
+      {
+        defense: 1,
+        magicDefense: 0,
+        percentDR: 0,
+        magicRes: 0,
+        movementRange: 2,
+      },
+      { min: 1, max: 2 },
+      'A cunning goblin mage.',
+      [
+        {
+          type: 'item',
+          item: getItemById(6003),
+          count: 2,
+          rarity: 0.6,
+        },
+        { type: 'gold', count: 30, rarity: 0.8 },
+      ]
+    ),
+    new Enemy(
+      6,
+      'Goblin Chieftain',
+      { current: 100, max: 100 },
+      { current: 20, max: 20 },
+      { current: 20, max: 20 },
+      3,
+      2,
+      2,
+      0.1,
+      0.95,
+      0.3,
+      {
+        defense: 1,
+        magicDefense: 0,
+        percentDR: 0,
+        magicRes: 0,
+        movementRange: 4,
+      },
+      { min: 7, max: 10 },
+      'The leader of the goblins.',
+      [
+        {
+          type: 'item',
+          item: getItemById(6003),
+          count: 2,
+          rarity: 0.6,
+        },
+        { type: 'gold', count: 100, rarity: 0.8 },
+      ]
+    ),
+  ];
+
+  // return enemyList;
+}
+
+function generateGameLocations(enemyList, npcList) {
+  return [
+    {
+      id: 'l-0001',
+      name: 'Elmere',
+      mapName: 'Elmere',
+      description:
+        'Elmere is a bustling town with a vibrant market and diverse inhabitants.',
+      directions: [2, 3, 6],
+      type: 'town',
+      levelLimit: { min: 1, max: 5 },
+      dialogue: 'Welcome to Elmere, the town of start-ups and adventures.',
+      mapx: -100,
+      mapy: 0,
+      discovered: true,
+      showOnMap: true,
+      layout: 'town-open',
+    },
+    {
+      id: 'l-0002',
+      name: "Edmund's Smithy",
+      mapName: 'Elmere',
+      description: 'A small shop full of various goods and equipment.',
+      directions: [1],
+      options: [{ name: 'Talk with Edmund', type: 'npc', npcId: 0 }],
+      type: 'shop',
+      shopType: ['Blacksmith', 'Armorsmith'],
+      directions: [1],
+      dialogue:
+        "You find yourself in a quaint and tidy blacksmith's shop, with weapons and armor adorning the walls.",
+      discovered: false,
+      mapx: -100,
+      mapy: 0,
+      showOnMap: false,
+      layout: 'town-inside',
+    },
+    {
+      id: 'l-0003',
+      name: "Elmere's Gate",
+      mapName: 'Elmere',
+      description:
+        'The main gate leading into Elmere, offering a path to adventure or safety depending on your direction.',
+      directions: [1, 4],
+      type: 'gate',
+      dialogue:
+        'The gate stands tall and imposing, a guard between the known and the unknown. Will you step through into the bustling life of Elmere, or venture into the wilds of the Forest of Eldarin?',
+      discovered: false,
+      mapx: -100,
+      mapy: 0,
+      showOnMap: false,
+      layout: 'town-gate',
+    },
+    {
+      id: 'l-0004',
+      name: 'Ancient Forest of Eldarin',
+      mapName: 'Ancient Forest of Eldarin',
+      description:
+        'The ancient, mysterious forest home to numerous creatures and secrets.',
+      directions: [3, 5],
+      type: 'forest',
+      options: [
+        {
+          name: 'Hunt',
+          type: 'hunt',
+        },
+        {
+          name: 'Scavenge',
+          type: 'scavenge',
+          action: () => console.log('SCAVENGING'),
+        },
+      ],
+      enemyInfo: {
+        enemies: [
+          {
+            name: 'Wolf',
+            mob: enemyList[0],
+            seen: false,
+            spawnCond: 'random',
+            rarity: 0.8,
+          },
+          {
+            name: 'Bear',
+            mob: enemyList[1],
+            seen: false,
+            spawnCond: 'random',
+            rarity: 0.2,
+          },
+        ],
+        enemyDiffMulti: 1,
+        enemyQuantMulti: 1,
+      },
+      recommendedLevel: 1,
+      enemyDiffMulti: 1,
+      dialogue:
+        'The Forest of Eldarin whispers secrets of old through the rustling leaves.',
+      mapx: 0,
+      mapy: 0,
+      discovered: false,
+      journalEntry: '',
+      showOnMap: true,
+      layout: 'forest-dense',
+    },
+    {
+      id: 'l-0005',
+      name: 'Narrow Cave',
+      mapName: 'Ancient Forest of Eldarin',
+      description:
+        'A dark, damp cave rumored to be the hiding place of a specific group of monsters.',
+      directions: [4],
+      type: 'travel',
+      enemyInfo: {
+        enemies: [
+          {
+            name: 'Goblin Scout',
+            mob: enemyList[2],
+            seen: false,
+            spawnCond: 'random',
+            rarity: 0.8,
+          },
+          {
+            name: 'Goblin Warrior',
+            mob: enemyList[3],
+            seen: false,
+            spawnCond: 'random',
+            rarity: 0.4,
+          },
+          {
+            name: 'Goblin Mage',
+            mob: enemyList[4],
+            seen: false,
+            spawnCond: 'random',
+            rarity: 0.1,
+          },
+          {
+            name: 'Goblin Chieftain',
+            mob: enemyList[5],
+            seen: false,
+            spawnCond: 'boss',
+            rarity: -1,
+          },
+        ],
+        enemyDiffMulti: 1.1,
+        enemyQuantMulti: 2.1,
+      },
+      recommendedLevel: 5,
+      dialogue:
+        'The cave is dark and foreboding, with the sounds of goblins echoing from within.',
+      discovered: false,
+      journalEntry: '',
+      mapx: 0,
+      mapy: 0,
+      showOnMap: false,
+      layout: 'cave-narrow',
+    },
+    {
+      id: 'l-0006',
+      name: 'Elmere Inn',
+      mapName: 'Elmere Inn',
+      description: 'A small shop full of various goods and equipment.',
+      directions: [1],
+      options: [{ name: 'Talk with Hammond', type: 'npc', npcId: 1 }],
+      type: 'inn',
+      shopType: ['Innkeeper', 'QuestGiver'],
+      directions: [1],
+      dialogue:
+        'Surrounding you is a simple inn of the small village of Elmere.',
+      discovered: false,
+      journalEntry: '',
+      mapx: -100,
+      mapy: 0,
+      showOnMap: false,
+      layout: 'town-inside',
+    },
+  ];
+  // return gameLocations;
+}
+
+function generateNPCs(items) {
+  return [
+    new NPC(
+      0,
+      'Edmund',
+      'blacksmith',
+      2,
+      '',
+      'Welcome to my smithy, I sell arms and armor, let me know if you need anything.',
+      [
+        { name: 'Shop', type: '' },
+        { name: 'Speak', questList: [] },
+      ],
+      new customInventory()
+    ),
+    new NPC(
+      1,
+      'Hammond',
+      'innkeeper',
+      2,
+      '',
+      'Welcome to the Elmere Inn, I am the innkeeper, Hammond.',
+      [{ name: 'Rest' }, { name: 'Speak', questList: [0, 1] }]
+    ),
+    new NPC(2, 'Arland', 'Mage Trainer', 2, '', 'What do you want...', [
+      { name: 'Learn Skills', skillIds: [0, 2, 4, 6] },
+      { name: 'Speak', questList: [5, 25] },
+    ]),
+    new NPC(
+      3,
+      'Quest Giver',
+      '',
+      2,
+      '',
+      'I have a task for you, if you are willing.',
+      []
+    ),
+  ];
+}
+
+function generateSkills() {
+  return [
+    new Skill(
+      0,
+      ['Attack', 'Damage'],
+      ['Basic'],
+      'Basic Attack',
+      'A basic attack, adapts to weapon.',
+      null,
+      1,
+      null,
+      null,
+      'Enemy',
+      1,
+      null,
+      0
+    ),
+    new Skill(
+      1, // idNum
+      ['Spell', 'Damage'], // type
+      ['Fire'], //Element
+      'Fire Spark', // name
+      'Launch a small burst of fire at a single target, dealing minor fire damage.', // description
+      { Intelligence: 5 }, // statReq
+      1, // levelReq
+      null, // gearReq
+      [{ stat: ['Intellect'], effect: ['damage'], scale: [1.2], flat: [8] }], // Effect
+      'Enemy', // targets
+      1, // targetCount
+      { resource: ['Mana'], type: ['flat'], value: [8] },
+      3 // cooldown
+    ),
+    new Skill(
+      2,
+      ['Spell', 'Heal'],
+      ['Nature'],
+      'Healing Touch',
+      'Restore a small amount of health to a single ally.',
+      { Wisdom: 6 },
+      2,
+      null,
+      [{ stat: ['Intellect'], effect: ['heal'], scale: [1.5], flat: [6] }],
+      'Ally',
+      1,
+      { resource: ['Mana'], type: ['flat'], value: [10] },
+      4
+    ),
+    new Skill(
+      3,
+      ['Spell', 'Damage'],
+      ['Arcane'],
+      'Arcane Bolt',
+      'Fire a bolt of pure arcane energy at a target, piercing through armor.',
+      { Intelligence: 8 },
+      3,
+      null,
+      [{ stat: ['Intellect'], effect: ['damage'], scale: [1.0], flat: [6] }],
+      'Enemy',
+      1,
+      { resource: ['Mana'], type: ['flat'], value: [5] },
+      2
+    ),
+    new Skill(
+      4,
+      ['Spell', 'Buff'],
+      ['Ice'],
+      'Ice Shield',
+      'Summon a protective shield of ice around an ally, absorbing damage.',
+      { Intellect: 7 },
+      4,
+      null,
+      [
+        {
+          stat: ['Intellect'],
+          effect: ['absorb'],
+          scale: [0.8],
+          flat: [10],
+        },
+      ],
+      'Ally',
+      1,
+      { resource: ['Mana'], type: ['flat'], value: [10] },
+      5
+    ),
+
+    new Skill(
+      5,
+      ['Attack', 'Damage', 'Weapon'],
+      ['Physical'],
+      'Slash',
+      'Perform a basic melee slash, dealing physical damage to a single enemy.',
+      { Strength: 5 },
+      1,
+      'Melee Weapon',
+      [
+        {
+          stat: ['Strength'],
+          effect: ['damage'],
+          scale: [1.2],
+          variance: [1.1],
+        },
+      ],
+      'Enemy',
+      1,
+      { resource: ['Stamina'], type: ['flat'], value: [10] },
+      1
+    ),
+
+    new Skill(
+      6,
+      ['Attack', 'Damage', 'Debuff', 'Shield'],
+      ['Physical'],
+      'Shield Bash',
+      'Bash an enemy with your shield, dealing minor damage and briefly stunning them.',
+      { Strength: 6 },
+      2,
+      'Shield',
+      [
+        {
+          stat: ['Strength'],
+          effect: ['shield-damage'],
+          scale: [0.8],
+          variance: [1.1],
+          status: [{ name: 'stun', target: ['Enemy'], duration: [1] }],
+        },
+      ], // Stun for 1 round
+      'Enemy',
+      1,
+      3,
+      { resource: ['Stamina'], type: ['flat'], value: [10] },
+      3
+    ),
+
+    new Skill(
+      7,
+      ['Utility', 'Buff'],
+      null,
+      'Quick Feet',
+      'Ready yourself for incoming attacks, increasing your chance to avoid attacks for 2 turns.',
+      { Dexterity: 6 },
+      1,
+      null,
+      [
+        {
+          status: [
+            {
+              name: 'evasion',
+              stat: ['evadeChance'],
+              target: ['Enemy'],
+              value: [0.2],
+              duration: [2],
+            },
+          ],
+        },
+      ],
+      'Self',
+      1,
+      { resource: ['Stamina'], type: ['flat'], value: [5] },
+      2
+    ),
+    new Skill(
+      8,
+      ['Attack', 'Damage', 'Weapon'],
+      ['Physical'],
+      'Power Strike',
+      'Channel your strength into a single, powerful blow.',
+      { Strength: 8 },
+      3,
+      'Melee Weapon',
+      [
+        {
+          stat: ['Strength'],
+          effect: ['damage'],
+          scale: [1.5],
+          bonusFlat: [5],
+        },
+      ],
+      { damage: [15, 25] },
+      'Enemy',
+      1,
+      { resource: ['Stamina'], type: ['flat'], value: [20] },
+      3
+    ),
+    new Skill(
+      9,
+      ['Utility', 'Debuff'],
+      null,
+      'Taunt',
+      'Taunt your enemy, reducing their chance to hit you.',
+      { Constitution: 5 },
+      1,
+      'Shield',
+      [],
+      { aggro: 50 }, // +50% aggro
+      'Enemy',
+      10,
+      3
+    ),
+    new Skill(
+      10,
+      ['Buff', 'Debuff'],
+      null,
+      'Enrage',
+      'Enter a frenzy, increasing damage dealt for 3 turns but costs health.',
+      { Strength: 7 },
+      2,
+      null,
+      [
+        {
+          status: [
+            {
+              name: 'enrage',
+              stat: ['damageAmp'],
+              target: ['Enemy'],
+              value: [1.2],
+              duration: [3],
+            },
+          ],
+        },
+      ],
+      'Self',
+      1,
+      { resource: ['Health'], type: ['percent'], value: ['20'] },
+      5
+    ),
+    new EnemySkill(
+      1000,
+      ['Attack', 'Weapon'],
+      ['Physical'],
+      'Bite',
+      'Bite the target, possibly causing internal wounds.',
+      [
+        { stat: ['Strength'], effect: ['damage'], scale: [1.1] },
+        {
+          status: [
+            {
+              name: 'bleed',
+              stat: ['health'],
+              target: ['Enemy'],
+              value: [-2],
+              duration: [2],
+              chance: 0.25,
+            },
+          ],
+        },
+      ],
+      'Enemy',
+      '1',
+      { resource: ['Stamina'], type: ['flat'], value: ['5'] },
+      3
+    ),
+    new EnemySkill(
+      1001,
+      ['Attack', 'Weapon'],
+      ['Physical'],
+      'Swipe',
+      'Swipe your claws at the target.',
+      [{ stat: ['Strength'], effect: ['damage'], scale: [1.1] }],
+      'Enemy',
+      '1',
+      { resource: ['Stamina'], type: ['flat'], value: ['2'] },
+      1
+    ),
+  ];
+}
+
+function generateScrollingText() {
+  const scrollingTexts = [
+    function (character) {
+      return `Welcome ${
+        character.name != null && character.name != ''
+          ? character.name
+          : 'Player'
+      }! <br><br> ##TAB## You find yourself at the edge of the town of Elmere, a small town known for its hardworking folk and occasional traveler. In front of you is the ancient Forest of Eldarin, spanning as far as the eye can see with trees. ##BR## ##TAB## You feel the weight of your pack and the gear you've just acquired, each item a silent promise of the adventures to come. You take a deep breath, tasting the crisp air mingled with the scent of pine and ancient earth. ##BR## ##TAB## Behind you, the village market buzzes faintly, a last vestige of civilization at your back. Your journey begins here, at the crossroads of fate and destiny. ##BR## ##TAB## Will you delve into the shadowy depths of the forest to uncover its secrets, or tread the well-worn paths to seek allies and knowledge in Elmere? The choice is yours, brave soul. ##BR## ##TAB## Your adventure starts now...`;
+    },
+  ];
+  return scrollingTexts;
+}
+
+function generateQuests() {
+  return [
+    {
+      id: 'q-0000',
+      name: 'Livestock in Danger',
+      description:
+        'Wolves have been attacking the town’s livestock. Eliminate 5 wolves to protect the villagers.',
+      objectives: [
+        {
+          type: 'kill',
+          target: 'Wolf',
+          required: 5,
+          progress: 0,
+        },
+      ],
+      rewards: {
+        gold: 50,
+        items: [],
+        experience: 100,
+      },
+      status: 'not started', // Can be 'not started', 'in progress', 'completed'
+    },
+    {
+      id: 'q-0001',
+      name: 'A Hunter’s Request',
+      description:
+        'A hunter is requesting aid in taking down a bear rampaging in the Ancient Forest of Eldarin. Bring back 1 bear pelt.',
+      objectives: [
+        {
+          type: 'collect',
+          target: 'Bear Pelt',
+          required: 1,
+          progress: 0,
+        },
+      ],
+      rewards: {
+        gold: 100,
+        items: [],
+        experience: 150,
+      },
+      status: 'not started',
+    },
+  ];
+}
+
+function addNPCItems(addItemsArr) {
+  const tempInv = new customInventory();
+
+  for (const entry of addItemsArr) {
+    const itemId = entry[0];
+    const quantity = entry[1] !== undefined ? entry[1] : 1;
+    if (itemId) {
+      tempInv.addItem(itemId);
+    }
+  }
+  // console.log('TEMP INV: ', tempInv);
+
+  return tempInv;
+}

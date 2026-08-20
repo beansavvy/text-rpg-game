@@ -1,0 +1,39 @@
+#menu-popout-stats-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#menu-popout-stats-table tr {
+  border-bottom: 1px solid lightgray;
+}
+
+#menu-popout-stats-table tr td:first-child {
+  text-align: right;
+  padding-right: 20px;
+}
+
+#menu-popout-stats-table tr td:nth-child(2) {
+  width: 100%;
+}
+
+.stats-table {
+  width: 100%;
+}
+
+.stats-table tr {
+  width: 100%;
+}
+
+.stats-table-seperator {
+  width: 100%;
+  text-align: center;
+  border-bottom: 2px solid black;
+  border-top: 1px solid black;
+}
+
+.stats-table-seperator-2nd {
+  width: 100%;
+  text-align: center;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+}

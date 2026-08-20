@@ -1,0 +1,28 @@
+.main-game-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0px;
+  padding: 0px;
+  height: 96vh;
+  width: 100%;
+  min-width: 1000px;
+}
+
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid black;
+  min-height: 100%;
+}
+
+.middle-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid black;
+  min-height: 100%;
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+}

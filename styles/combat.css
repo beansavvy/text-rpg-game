@@ -1,0 +1,152 @@
+.combat-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.combat-grid {
+  border-collapse: collapse;
+  width: fit-content;
+  margin: 10px auto;
+}
+
+.grid-cell {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #aaa;
+  text-align: center;
+}
+
+.player-cell {
+  background-color: lightblue;
+}
+
+.enemy-cell {
+  background-color: lightcoral;
+}
+
+.movement-range-cell {
+  background-color: lightgreen;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.enemy-section {
+  text-align: center;
+}
+
+.enemy-name-wrapper {
+  width: fit-content;
+  margin: auto;
+}
+
+.enemy-name {
+  width: fit-content;
+  font-size: 1.5em;
+  cursor: pointer;
+  margin: auto;
+}
+
+.enemy-image-placeholder {
+  height: 0px;
+  background-color: lightgray;
+  margin: 10px 0;
+}
+
+.player-section {
+  margin-top: 20px;
+}
+
+.player-stats {
+  display: flex;
+  flex-direction: column;
+}
+
+.health-bar,
+.mana-bar,
+.stamina-bar {
+  position: relative;
+  border-bottom: 1px solid #ccc;
+}
+
+.fill {
+  height: 15px;
+  background-color: #4caf50;
+}
+
+.mana-bar .fill {
+  background-color: #2196f3;
+}
+
+.stamina-bar .fill {
+  background-color: #ffc107;
+}
+
+.turn-indicator {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.turn-indicator ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.turn-indicator li {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.turn-indicator .current-turn {
+  background-color: #ffeeba;
+  border-color: #ffc107;
+  font-weight: bold;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.tabs button {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.tab-content {
+  margin-top: 20px;
+}
+
+.tab-content > div {
+  display: none;
+}
+
+.tab-content > div.active {
+  display: block;
+}
+
+.bar-numbers {
+  display: inline-block;
+}
+
+.combat-menu-btn-td {
+  border-right: 1px solid gray;
+}
+
+.combat-menu-btn {
+  padding: 5px 10px;
+}
+
+.td-hori-gap-fill {
+  width: 100%;
+  border-bottom: 1px solid gray;
+}
+
+.player-combat-menu {
+  width: 100%;
+}

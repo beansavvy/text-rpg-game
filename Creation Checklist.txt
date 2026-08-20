@@ -1,0 +1,8 @@
+TODO
+1. Combat
+2. Quests
+
+DONE
+1. Character Creation
+2. Equipment Management
+3. 

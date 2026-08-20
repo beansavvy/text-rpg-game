@@ -1,0 +1,22 @@
+.dialogue-button {
+  vertical-align: middle;
+  width: 150px;
+  max-width: 150px;
+  height: 100%;
+  min-height: 34px;
+  font-size: 15px;
+  border: none;
+  background: white;
+  padding: 5px 20px;
+  margin: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.section-header {
+  padding: 5px;
+  width: 100%;
+  border-bottom: 3px solid black;
+  text-align: center;
+}
