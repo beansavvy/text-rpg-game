@@ -6,6 +6,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Text RPG',
+  description: 'A text-based RPG game created by beansavvy on GitHub'
 };
 
 export default function RootLayout({
