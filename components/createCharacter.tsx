@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useGameContext } from '@context/GameContext';
 
 const CreateCharacter = () => {
-  const { createCharacter, setNewCurrentScreen, db } = useGameContext();
+  const { createCharacter, setCurrentScreen, db } = useGameContext();
   const races = db.races;
   const classes = db.classes;
   const [name, setName] = useState('');
@@ -63,7 +63,7 @@ const CreateCharacter = () => {
 
   const handleCreateCharacter = () => {
     createCharacter(name, selectedRace, selectedClass, attributes);
-    setNewCurrentScreen('mainGame');
+    setCurrentScreen('mainGame');
   };
 
   return (
