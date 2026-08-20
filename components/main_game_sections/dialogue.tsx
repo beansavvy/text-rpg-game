@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import styles from '@styles/globalStyles.css';
 import { useLogContext } from '@context/LogContext'; // Adjust the import path accordingly
 import { useGameContext } from '@context/GameContext';
 import Tooltip from '@components/tooltip';
